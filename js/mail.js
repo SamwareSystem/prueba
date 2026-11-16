@@ -3,7 +3,7 @@
 window.Mail = {
   async send(subject, fromName, fields, botcheck) {
     const CFG = window.APP_CONFIG;
-    if (!CFG || !CFG.ACCESS_KEY || CFG.ACCESS_KEY === "ff824b8a-b391-4607-b297-5c3945d5fef6") throw new Error("Falta configurar la access key en js/config.js (ver GUIA.md).");
+    if (!CFG || !CFG.ACCESS_KEY || CFG.ACCESS_KEY === "PEGA_AQUI_TU_ACCESS_KEY") throw new Error("Falta configurar la access key en js/config.js (ver GUIA.md).");
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 20000);
     try {
