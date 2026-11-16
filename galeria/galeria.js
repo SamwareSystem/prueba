@@ -3,8 +3,8 @@
 /* Galería: un mundo grande con todas las fotos instanciadas; la cámara se mueve (arrastrar / tocar / rueda / flechas). */
 const $ = (s) => /** @type {any} */ (document.querySelector(s));
 const view = $("#view"), world = $("#world"), hint = $("#hint"), mini = $("#mini"), miniVp = $("#miniVp");
-/** @type {string[]} */
-const FOTOS = /** @type {any} */ (window).FOTOS || [];
+/** Cada foto: {n, m, g, w, h, l} (optimizada) o solo texto/{n} (sin optimizar). */
+const FOTOS = ((/** @type {any} */ (window).FOTOS) || []).map((/** @type {any} */ f) => (typeof f === "string" ? { n: f } : f));
 const touch = matchMedia("(pointer:coarse)").matches;
 $("#hintTxt").textContent = touch ? "desliza para explorar" : "arrastra para explorar";
 
@@ -12,6 +12,37 @@ if (!FOTOS.length) { $("#empty").hidden = false; hint.hidden = true; mini.hidden
 
 /** PRNG determinista: el mapa es el mismo cada vez. @param {number} a */
 function rng(a) { return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+/* ---- Carga por niveles: borroso → miniatura → versión grande (solo lo que está a la vista) ---- */
+/** @param {string} url @returns {Promise<void>} */
+const preload = (url) => { const i = new Image(); i.decoding = "async"; i.src = url; return i.decode ? i.decode().catch(() => {}) : new Promise((r) => { i.onload = i.onerror = () => r(); }); };
+let busy = 0; /** @type {HTMLElement[]} */ const queue = [];
+function pump() {
+  while (busy < 3 && queue.length) {
+    const el = /** @type {HTMLElement} */ (queue.shift());
+    if (el.dataset.up !== "1") continue;
+    const it = FOTOS[Number(el.dataset.i)], img = el.querySelector("img");
+    if (!it.g || img.dataset.tier === "g") continue;
+    busy++;
+    preload("./" + it.g.split("/").map(encodeURIComponent).join("/")).then(() => {
+      if (el.dataset.up === "1") { img.src = "./" + it.g.split("/").map(encodeURIComponent).join("/"); img.dataset.tier = "g"; }
+    }).finally(() => { busy--; pump(); });
+  }
+}
+/** Primer nivel: aparece cerca de la pantalla -> miniatura. */
+const near = new IntersectionObserver((es) => es.forEach((e) => {
+  const el = /** @type {HTMLElement} */ (e.target), img = el.querySelector("img"), it = FOTOS[Number(el.dataset.i)];
+  el.classList.toggle("vis", e.isIntersecting);
+  if (!e.isIntersecting) { el.dataset.up = "0"; return; }
+  if (!img.getAttribute("src")) img.src = "./" + (it.m || "fotos/" + it.n).split("/").map(encodeURIComponent).join("/");
+  if (it.g) { el.dataset.up = "1"; queue.push(el); pump(); }
+}), { root: view, rootMargin: "300px" });
+/** Muy lejos de la pantalla: vuelve a miniatura para liberar memoria. */
+const far = new IntersectionObserver((es) => es.forEach((e) => {
+  if (e.isIntersecting) return;
+  const el = /** @type {HTMLElement} */ (e.target), img = el.querySelector("img"), it = FOTOS[Number(el.dataset.i)];
+  if (img.dataset.tier === "g" && it.m) { img.src = "./" + it.m.split("/").map(encodeURIComponent).join("/"); delete img.dataset.tier; }
+}), { root: view, rootMargin: "1600px" });
 
 let W = 0, H = 0, cam = { x: 0, y: 0 }, vel = { x: 0, y: 0 }, vw = 0, vh = 0, cardW = 180;
 /** @type {HTMLElement[]} */ const nodes = [];
@@ -29,7 +60,7 @@ function build() {
   const R = rng(n * 7919 + 13);
   for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [cells[i], cells[j]] = [cells[j], cells[i]]; }
   world.style.width = W + "px"; world.style.height = H + "px";
-  FOTOS.forEach((name, i) => {
+  FOTOS.forEach((it, i) => {
     let el = nodes[i];
     if (!el) {
       el = document.createElement("div"); el.className = "ph";
@@ -41,13 +72,17 @@ function build() {
       el.style.setProperty("--dl", "-" + (r2() * 6).toFixed(1) + "s");
       el.innerHTML = '<figure><i></i><img alt="" draggable="false" loading="lazy" decoding="async"></figure>';
       const img = el.querySelector("img");
-      img.src = "fotos/" + encodeURIComponent(name);
-      img.addEventListener("load", () => img.classList.add("ok"));
-      nodes[i] = el; world.append(el);
+      img.removeAttribute("loading");
+      if (it.w && it.h) { img.style.aspectRatio = it.w + "/" + it.h; img.classList.add("ok"); }
+      if (it.l) img.style.background = `url(${it.l}) center/cover`;   // borroso instantáneo
+      if (!it.w) img.addEventListener("load", () => img.classList.add("ok"));
+      el.dataset.i = String(i);
+      nodes[i] = el; world.append(el); near.observe(el); far.observe(el);
     }
     const [c, r] = cells[i];
     const x = c * cw + (cw - cardW) * (0.1 + 0.8 * Number(el.dataset.jx));
-    const y = r * ch + (ch - cardW * 1.2) * (0.1 + 0.8 * Number(el.dataset.jy));
+    const hEst = cardW * (it.w && it.h ? it.h / it.w : 1.25) + 33;
+    const y = r * ch + Math.max(0, ch - hEst) * (0.1 + 0.8 * Number(el.dataset.jy));
     el.style.width = cardW + "px";
     el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) rotate(${Number(el.dataset.rot).toFixed(2)}deg)`;
     el.dataset.mx = String(x / W); el.dataset.my = String(y / H);

@@ -4,7 +4,8 @@ body.gal{--paper:#EFE2CE;--dot:#CDB594;--frame:#FBF5EA;--brown:#8A6A4F;--shadow:
 #view.drag{cursor:grabbing}
 #view:after{content:"";position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 90px rgba(90,55,30,.28)}
 #world{position:absolute;left:0;top:0;will-change:transform}
-.ph{position:absolute;left:0;top:0;will-change:transform}
+.ph{position:absolute;left:0;top:0}
+.ph:not(.vis) figure{animation-play-state:paused}
 .ph figure{margin:0;padding:9px 9px 24px;background:var(--frame);border-radius:2px;box-shadow:0 1px 1px var(--shadow),0 10px 22px var(--shadow);position:relative;animation:bob var(--d,7s) ease-in-out var(--dl,0s) infinite alternate}
 .ph img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;filter:sepia(.28) saturate(.9) contrast(1.03);pointer-events:none;-webkit-user-drag:none;background:#d9c8ae}
 .ph img.ok{aspect-ratio:auto}

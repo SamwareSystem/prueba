@@ -59,3 +59,13 @@ generar-lista.py      Registra canciones y fotos (ejecútalo tras añadir archiv
 
 ## Subir a GitHub (v2)
 Sube TODO el contenido nuevo del zip, conservando carpetas. Conserva tu `js/config.js` con la key real (no lo reemplaces; el de este zip trae el marcador). El antiguo `index.html` ahora es el Hub; el cuestionario vive en `cuestionario/`, y `js/app.js` es solo del cuestionario.
+
+
+## Optimización de la galería (v3)
+Después de poner fotos en `galeria/fotos/`, ejecuta `pip install pillow` (una sola vez) y `python3 generar-lista.py`. El script:
+- crea `galeria/min/` (miniatura WebP 640 px) y `galeria/med/` (WebP 1800 px, calidad 92) sin tocar tus originales; solo reprocesa fotos nuevas o cambiadas;
+- respeta la orientación del celular y guarda el tamaño real de cada foto (sin saltos ni recortes) y un mini-borroso que aparece al instante.
+
+En la página: cada foto aparece borrosa al instante → miniatura cuando está cerca de la pantalla → versión grande cuando está a la vista (máximo 3 descargas a la vez); al alejarse mucho, vuelve a miniatura para ahorrar memoria. Las animaciones se pausan en las fotos fuera de pantalla.
+
+**Subir a GitHub:** basta con subir `galeria/min/`, `galeria/med/` y `galeria/lista.js` (no hace falta `galeria/fotos/`). Tus originales quedan en tu computadora y la subida pesa mucho menos. (Si algún día quieres ampliar fotos a pantalla completa, ahí sí se subirían los originales.)
