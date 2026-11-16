@@ -11,6 +11,11 @@ y escribe galeria/lista.js con tamaño y un mini-borroso para mostrar algo al in
 Tus originales NO se tocan. Para subir a GitHub puedes omitir fotos/ y subir solo min/ y med/ (mucho más liviano).
 """
 import base64, io, json, pathlib, sys
+
+# En consolas de Windows (cp1252) un caracter raro en un print detenia el script ANTES de escribir lista.js.
+for _f in (sys.stdout, sys.stderr):
+    try: _f.reconfigure(errors="replace")
+    except Exception: pass
 raiz = pathlib.Path(__file__).parent
 
 def escribir(destino, var, datos):
@@ -54,7 +59,8 @@ if Image:
         ant += p.stat().st_size; nuevo += mn.stat().st_size + md.stat().st_size
         lista.append({"n": p.name, "m": "min/" + mn.name, "g": "med/" + md.name, "w": w, "h": h, "l": lqip})
     mb = lambda x: f"{x/1048576:.1f} MB"
-    print(f"galeria: {len(lista)} fotos · originales {mb(ant)} → min+med {mb(nuevo)}")
+    print(f"galeria: {len(lista)} fotos - originales {mb(ant)} -> min+med {mb(nuevo)}")
 else:
     lista = [{"n": p.name} for p in originales]
 escribir("galeria/lista.js", "FOTOS", lista)
+print("listo: musica/lista.js y galeria/lista.js actualizados en", raiz.resolve())
