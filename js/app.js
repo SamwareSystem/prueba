@@ -4,7 +4,7 @@
 /** @type {{ACCESS_KEY: string}} */
 const CFG = /** @type {any} */ (window).APP_CONFIG;
 const ENDPOINT = "https://api.web3forms.com/submit";
-const PLACEHOLDER_KEY = "PEGA_AQUI_TU_ACCESS_KEY";
+const PLACEHOLDER_KEY = "ff824b8a-b391-4607-b297-5c3945d5fef6";
 
 /** @param {string} sel @returns {HTMLElement} */
 function el(sel) {
