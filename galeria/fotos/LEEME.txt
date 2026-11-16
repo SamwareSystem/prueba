@@ -1,0 +1,2 @@
+Pon aquí tus fotos (.jpg, .png, .webp...) y ejecuta python3 generar-lista.py desde la raíz del proyecto.
+Consejo: reduce cada foto a ~1200 px de lado largo (menos de 400 KB) para que cargue rápido.
