@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carta libre</title>
+<meta name="theme-color" content="#FFF8F3">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-.7 -.55 1.4 1.2'><path d='M0 .55C-1-.1-.6-.78 0-.25C.6-.78 1-.1 0 .55Z' fill='%238F6CD0'/></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital@1&family=Poppins:ital,wght@0,400;0,500;0,700;1,300&display=swap">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/hub.css">
+<link rel="stylesheet" href="../css/carta.css">
+</head>
+<body>
+<a class="back" href="../index.html" aria-label="Volver al inicio"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+<main class="wrap t1" id="app">
+  <header class="hero">
+    <div class="hs" id="hs"></div>
+    <h1>Carta libre</h1>
+    <p class="sub">~ escribe lo que quieras, la hoja crece contigo ~</p>
+    <div class="dv" data-h></div>
+  </header>
+
+  <form id="form" novalidate>
+    <input type="checkbox" id="botcheck" tabindex="-1" autocomplete="off" hidden>
+    <div class="paper" id="paper">
+      <div class="date" id="fecha"></div>
+      <label class="para">Para <input class="line" id="para" maxlength="80" placeholder="mi amor…" autocomplete="off"></label>
+      <textarea id="cuerpo" class="sheet" rows="1" maxlength="20000" placeholder="Empieza a escribir aquí…" aria-label="Cuerpo de la carta"></textarea>
+      <label class="firma"><span>Con cariño,</span><input class="line" id="firma" maxlength="80" placeholder="tu nombre" autocomplete="name"></label>
+    </div>
+    <p id="status" role="alert" hidden></p>
+    <button id="send" class="send seal" type="submit">
+      <svg viewBox="0 0 48 48" width="30" height="30" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#fff" opacity=".18"/><circle cx="24" cy="24" r="14" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="2 3"/><path d="M24 33c-7-4.5-10-8-10-11.5 0-3 2.2-5 5-5 2.2 0 4 1 5 3 1-2 2.8-3 5-3 2.8 0 5 2 5 5 0 3.5-3 7-10 11.5z" fill="#fff"/></svg>
+      Sellar y enviar
+    </button>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  </form>
+
+  <section id="thanks" hidden class="t1" style="text-align:center;padding:2rem 0">
+    <div class="hs" data-hs></div>
+    <h2 style="color:var(--lil)">¡Carta enviada!</h2>
+    <p class="sub">Ya va en camino. Gracias por escribirme.</p>
+  </section>
+  <div class="ft" id="ft"></div>
+</main>
+<script src="../musica/lista.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/deco.js"></script>
+<script src="../js/mail.js"></script>
+<script src="../js/musica.js"></script>
+<script src="carta.js"></script>
+</body>
+</html>
